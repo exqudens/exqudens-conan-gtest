@@ -31,18 +31,18 @@ if(NOT EXISTS "${CMAKE_DOWNLOADS}" OR NOT IS_DIRECTORY "${CMAKE_DOWNLOADS}")
     message(FATAL_ERROR "CMAKE_DOWNLOADS: '${CMAKE_DOWNLOADS}' is not directory.")
 endif()
 if(NOT EXISTS "${CMAKE_DOWNLOADS}/${PROJECT_NAME}-${PROJECT_VERSION}.zip")
+    message("download ...")
     file(DOWNLOAD
             "https://github.com/google/googletest/archive/refs/tags/release-${PROJECT_VERSION}.zip"
             "${CMAKE_DOWNLOADS}/${PROJECT_NAME}-${PROJECT_VERSION}.zip"
             EXPECTED_MD5 "52943a59cefce0ae0491d4d2412c120b"
     )
+    message("... done")
 endif()
 if(NOT EXISTS "${PROJECT_BINARY_DIR}/${PROJECT_NAME}-${PROJECT_VERSION}.zip")
-    file(DOWNLOAD
-        "file:///${CMAKE_DOWNLOADS}/${PROJECT_NAME}-${PROJECT_VERSION}.zip"
-        "${PROJECT_BINARY_DIR}/${PROJECT_NAME}-${PROJECT_VERSION}.zip"
-        EXPECTED_MD5 "52943a59cefce0ae0491d4d2412c120b"
-    )
+    message("copy from downloads ...")
+    file(COPY "${CMAKE_DOWNLOADS}/${PROJECT_NAME}-${PROJECT_VERSION}.zip" DESTINATION "${PROJECT_BINARY_DIR}")
+    message("... done")
 endif()
 if(NOT EXISTS "${PROJECT_BINARY_DIR}/googletest-release-${PROJECT_VERSION}")
     file(ARCHIVE_EXTRACT INPUT "${PROJECT_BINARY_DIR}/${PROJECT_NAME}-${PROJECT_VERSION}.zip")
