@@ -31,12 +31,26 @@ if(NOT EXISTS "${CMAKE_DOWNLOADS}" OR NOT IS_DIRECTORY "${CMAKE_DOWNLOADS}")
     message(FATAL_ERROR "CMAKE_DOWNLOADS: '${CMAKE_DOWNLOADS}' is not directory.")
 endif()
 if(NOT EXISTS "${CMAKE_DOWNLOADS}/${PROJECT_NAME}-${PROJECT_VERSION}.zip")
-    message("download ...")
+    #[[message("download ...")
     file(DOWNLOAD
             "https://github.com/google/googletest/archive/refs/tags/release-${PROJECT_VERSION}.zip"
             "${CMAKE_DOWNLOADS}/${PROJECT_NAME}-${PROJECT_VERSION}.zip"
             EXPECTED_MD5 "52943a59cefce0ae0491d4d2412c120b"
     )
+    message("... done")]]
+
+    message("download ...")
+    set(EXPECTED_FILE_DOWNLOAD_MD5 "52943a59cefce0ae0491d4d2412c120b")
+    file(MAKE_DIRECTORY "${PROJECT_BINARY_DIR}/tmp")
+    file(DOWNLOAD
+        "https://github.com/google/googletest/archive/refs/tags/release-${PROJECT_VERSION}.zip"
+        "${PROJECT_BINARY_DIR}/tmp/${PROJECT_NAME}-${PROJECT_VERSION}.zip"
+    )
+    file(MD5 "${PROJECT_BINARY_DIR}/tmp/${PROJECT_NAME}-${PROJECT_VERSION}.zip" ACTUAL_FILE_DOWNLOAD_MD5)
+    if(NOT "${EXPECTED_FILE_DOWNLOAD_MD5}" STREQUAL "${ACTUAL_FILE_DOWNLOAD_MD5}")
+        message(FATAL_ERROR "EXPECTED_FILE_DOWNLOAD_MD5: '${EXPECTED_FILE_DOWNLOAD_MD5}' not equal to ACTUAL_FILE_DOWNLOAD_MD5: '${ACTUAL_FILE_DOWNLOAD_MD5}'")
+    endif()
+    file(COPY "${PROJECT_BINARY_DIR}/tmp/${PROJECT_NAME}-${PROJECT_VERSION}.zip" DESTINATION "${CMAKE_DOWNLOADS}")
     message("... done")
 endif()
 if(NOT EXISTS "${PROJECT_BINARY_DIR}/${PROJECT_NAME}-${PROJECT_VERSION}.zip")
