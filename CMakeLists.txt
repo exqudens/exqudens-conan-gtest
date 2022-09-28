@@ -31,14 +31,6 @@ if(NOT EXISTS "${CMAKE_DOWNLOADS}" OR NOT IS_DIRECTORY "${CMAKE_DOWNLOADS}")
     message(FATAL_ERROR "CMAKE_DOWNLOADS: '${CMAKE_DOWNLOADS}' is not directory.")
 endif()
 if(NOT EXISTS "${CMAKE_DOWNLOADS}/${PROJECT_NAME}-${PROJECT_VERSION}.zip")
-    #[[message("download ...")
-    file(DOWNLOAD
-            "https://github.com/google/googletest/archive/refs/tags/release-${PROJECT_VERSION}.zip"
-            "${CMAKE_DOWNLOADS}/${PROJECT_NAME}-${PROJECT_VERSION}.zip"
-            EXPECTED_MD5 "52943a59cefce0ae0491d4d2412c120b"
-    )
-    message("... done")]]
-
     message("download ...")
     set(EXPECTED_FILE_DOWNLOAD_MD5 "52943a59cefce0ae0491d4d2412c120b")
     file(MAKE_DIRECTORY "${PROJECT_BINARY_DIR}/tmp")
