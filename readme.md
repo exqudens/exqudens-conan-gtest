@@ -4,6 +4,6 @@
 
 git-bash command line:
 ```
-cmake --list-presets | cut -d ':' -f2 | xargs -I '{}' echo '{}' | xargs -I '{}' cmake --preset '{}'
-cmake --list-presets | cut -d ':' -f2 | xargs -I '{}' echo '{}' | xargs -I '{}' cmake --build --preset '{}' --target conan-export
+cmake --list-presets | cut -d ':' -f2 | xargs -I '{}' echo '{}' | grep 'windows*' | xargs -I '{}' bash -c "cmake --preset {} || exit 255"
+cmake --list-presets | cut -d ':' -f2 | xargs -I '{}' echo '{}' | grep 'windows*' | xargs -I '{}' bash -c "cmake --build --preset {} --target conan-export || exit 255"
 ```
