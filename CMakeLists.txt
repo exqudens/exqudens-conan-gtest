@@ -21,16 +21,29 @@ endblock()
 include("${CMAKE_CURRENT_BINARY_DIR}/../util.cmake")
 
 string(REPLACE "." ";" PRESET_NAME_ELEMENTS "${PRESET_NAME}")
-if("msvc-16-x64-x64" IN_LIST PRESET_NAME_ELEMENTS AND NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/../msvc-16-x64-x64-toolchain.cmake")
-    set_msvc_toolchain_content(TOOLCHAIN_CONTENT
-        PROCESSOR "x86_64"
-        OS "${CMAKE_HOST_SYSTEM_NAME}"
-        VERSION "16"
-        HOST "x64"
-        TARGET "x64"
-    )
-    file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/../msvc-16-x64-x64-toolchain.cmake" "${TOOLCHAIN_CONTENT}")
+if("msvc-16-x64-x64" IN_LIST PRESET_NAME_ELEMENTS)
+    if(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/../msvc-16-x64-x64-toolchain.cmake")
+        set_msvc_toolchain_content(TOOLCHAIN_CONTENT
+            PROCESSOR "x86_64"
+            OS "${CMAKE_HOST_SYSTEM_NAME}"
+            VERSION "16"
+            HOST "x64"
+            TARGET "x64"
+        )
+        file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/../msvc-16-x64-x64-toolchain.cmake" "${TOOLCHAIN_CONTENT}")
+    endif()
     find_program(CONAN_COMMAND NAMES "conan.exe" PATHS ENV CONAN_PATH ENV PATH REQUIRED NO_CACHE NO_DEFAULT_PATH)
+elseif("gcc" IN_LIST PRESET_NAME_ELEMENTS)
+    if(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/../gcc-toolchain.cmake")
+        find_file(COMPILER_PATH NAMES "gcc" PATHS ENV GCC_PATH ENV PATH REQUIRED NO_CACHE NO_DEFAULT_PATH)
+        set_gnu_toolchain_content(TOOLCHAIN_CONTENT
+            PROCESSOR "x86_64"
+            OS "${CMAKE_HOST_SYSTEM_NAME}"
+            PATH "${COMPILER_PATH}"
+        )
+        file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/../gcc-toolchain.cmake" "${TOOLCHAIN_CONTENT}")
+    endif()
+    find_program(CONAN_COMMAND NAMES "conan" PATHS ENV CONAN_PATH ENV PATH REQUIRED NO_CACHE NO_DEFAULT_PATH)
 endif()
 
 file(READ "${CMAKE_CURRENT_SOURCE_DIR}/name-version.txt" INFO)
