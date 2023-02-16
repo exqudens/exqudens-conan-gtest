@@ -188,7 +188,7 @@ add_custom_target("cmake-install"
 add_custom_target("conan-export" ALL
     COMMAND "${CONAN_COMMAND}"
             export-pkg
-            --force
+            #--force
             "${PROJECT_SOURCE_DIR}/conanfile.py"
             #"gitlab-group+gitlab-sub-group+${PROJECT_NAME}/stable"
             --package-folder
