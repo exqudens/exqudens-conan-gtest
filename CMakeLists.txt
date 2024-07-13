@@ -2,46 +2,45 @@ cmake_minimum_required(VERSION 3.25 FATAL_ERROR)
 
 block()
     set(fileName "util.cmake")
-    if(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/../${fileName}")
+    if(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/../common/${fileName}")
         file(REMOVE "${CMAKE_CURRENT_BINARY_DIR}/tmp/${fileName}")
         file(DOWNLOAD
-            "https://raw.githubusercontent.com/exqudens/exqudens-cmake/master/src/main/cmake/${fileName}"
+            "https://raw.githubusercontent.com/exqudens/exqudens-cmake/1.0.1/src/main/cmake/${fileName}"
             "${CMAKE_CURRENT_BINARY_DIR}/tmp/${fileName}"
-            EXPECTED_MD5 "3ed544e138fcaa4dd18a6b20413070af"
+            EXPECTED_MD5 "d7dd546adf3830d9eb6cca7b0dda7d4e"
             STATUS downloadStatus
         )
-        if("${downloadStatus}" STREQUAL "0;\"No error\"")
-            file(COPY "${CMAKE_CURRENT_BINARY_DIR}/tmp/${fileName}" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}/..")
-        else()
+        if(NOT "${downloadStatus}" STREQUAL "0;\"No error\"")
             message(FATAL_ERROR "downloadStatus: '${downloadStatus}'")
         endif()
+        file(COPY "${CMAKE_CURRENT_BINARY_DIR}/tmp/${fileName}" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}/../common")
     endif()
 endblock()
 
-include("${CMAKE_CURRENT_BINARY_DIR}/../util.cmake")
+include("${CMAKE_CURRENT_BINARY_DIR}/../common/util.cmake")
 
 string(REPLACE "." ";" PRESET_NAME_ELEMENTS "${PRESET_NAME}")
 if("msvc-16-x64-x64" IN_LIST PRESET_NAME_ELEMENTS)
-    if(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/../msvc-16-x64-x64-toolchain.cmake")
-        set_msvc_toolchain_content(TOOLCHAIN_CONTENT
+    if(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/../common/msvc-16-x64-x64-toolchain.cmake")
+        set_msvc_toolchain(TOOLCHAIN_CONTENT
             PROCESSOR "x86_64"
             OS "${CMAKE_HOST_SYSTEM_NAME}"
             VERSION "16"
             HOST "x64"
             TARGET "x64"
+            OUTPUT_FILE "${CMAKE_CURRENT_BINARY_DIR}/../common/msvc-16-x64-x64-toolchain.cmake"
         )
-        file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/../msvc-16-x64-x64-toolchain.cmake" "${TOOLCHAIN_CONTENT}")
     endif()
     find_program(CONAN_COMMAND NAMES "conan.exe" PATHS ENV CONAN_PATH ENV PATH REQUIRED NO_CACHE NO_DEFAULT_PATH)
 elseif("gcc" IN_LIST PRESET_NAME_ELEMENTS)
-    if(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/../gcc-toolchain.cmake")
-        find_file(COMPILER_PATH NAMES "gcc" PATHS ENV GCC_PATH ENV PATH REQUIRED NO_CACHE NO_DEFAULT_PATH)
-        set_gnu_toolchain_content(TOOLCHAIN_CONTENT
+    if(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/../common/gcc-toolchain.cmake")
+        find_file(COMPILER_FILE NAMES "gcc" PATHS ENV GCC_PATH ENV PATH REQUIRED NO_CACHE NO_DEFAULT_PATH)
+        set_gnu_toolchain(TOOLCHAIN_CONTENT
             PROCESSOR "x86_64"
             OS "${CMAKE_HOST_SYSTEM_NAME}"
-            PATH "${COMPILER_PATH}"
+            PATH "${COMPILER_FILE}"
+            OUTPUT_FILE "${CMAKE_CURRENT_BINARY_DIR}/../common/gcc-toolchain.cmake"
         )
-        file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/../gcc-toolchain.cmake" "${TOOLCHAIN_CONTENT}")
     endif()
     find_program(CONAN_COMMAND NAMES "conan" PATHS ENV CONAN_PATH ENV PATH REQUIRED NO_CACHE NO_DEFAULT_PATH)
 endif()
@@ -198,4 +197,17 @@ add_custom_target("conan-export" ALL
     DEPENDS "cmake-install"
     WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}"
     VERBATIM
+)
+
+set_target_names(ALL_TARGETS "${CMAKE_CURRENT_SOURCE_DIR}")
+message(STATUS "all-targets:")
+foreach(t IN LISTS ALL_TARGETS)
+    message(STATUS "${t}")
+endforeach()
+
+set("${PROJECT_NAME}_ADDITIONAL_CLEAN_FILES"
+    "${CMAKE_INSTALL_PREFIX}"
+)
+set_directory_properties(PROPERTIES
+    ADDITIONAL_CLEAN_FILES "${${PROJECT_NAME}_ADDITIONAL_CLEAN_FILES}"
 )
