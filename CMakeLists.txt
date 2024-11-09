@@ -5,9 +5,9 @@ block()
     if(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/../common/${fileName}")
         file(REMOVE "${CMAKE_CURRENT_BINARY_DIR}/tmp/${fileName}")
         file(DOWNLOAD
-            "https://raw.githubusercontent.com/exqudens/exqudens-cmake/1.0.1/src/main/cmake/${fileName}"
+            "https://raw.githubusercontent.com/exqudens/exqudens-cmake/2.0.0/src/main/cmake/${fileName}"
             "${CMAKE_CURRENT_BINARY_DIR}/tmp/${fileName}"
-            EXPECTED_MD5 "d7dd546adf3830d9eb6cca7b0dda7d4e"
+            EXPECTED_MD5 "7e375203230f05ebfb625ad455854449"
             STATUS downloadStatus
         )
         if(NOT "${downloadStatus}" STREQUAL "0;\"No error\"")
@@ -105,6 +105,7 @@ set_conan_architecture(CONAN_ARCH "${CMAKE_SYSTEM_PROCESSOR}")
 set_conan_compiler(CONAN_COMPILER "${CMAKE_CXX_COMPILER_ID}")
 set_conan_compiler_version(CONAN_COMPILER_VERSION "${CMAKE_CXX_COMPILER_ID}" "${CMAKE_CXX_COMPILER_VERSION}" MAX_ELEMENTS "1")
 set_conan_compiler_runtime(CONAN_COMPILER_RUNTIME "${CMAKE_MSVC_RUNTIME_LIBRARY}")
+set_conan_compiler_runtime_type(CONAN_COMPILER_RUNTIME_TYPE "${CMAKE_MSVC_RUNTIME_LIBRARY}")
 set_python_boolean(CONAN_SHARED "${BUILD_SHARED_LIBS}")
 
 set_conan_settings(CONAN_SETTINGS
@@ -112,12 +113,16 @@ set_conan_settings(CONAN_SETTINGS
     "os=${CMAKE_SYSTEM_NAME}"
     "compiler=${CONAN_COMPILER}"
     "compiler.version=${CONAN_COMPILER_VERSION}"
+    "compiler.cppstd=${CMAKE_CXX_STANDARD}"
+    "compiler.cstd=${CMAKE_C_STANDARD}"
     "compiler.runtime=${CONAN_COMPILER_RUNTIME}"
+    "compiler.runtime_type=${CONAN_COMPILER_RUNTIME_TYPE}"
     "compiler.libcxx=${CONAN_COMPILER_LIBCXX}"
     "build_type=${CMAKE_BUILD_TYPE}"
 )
 set_conan_options(CONAN_OPTIONS
-    "shared=${CONAN_SHARED}"
+    "&:shared=${CONAN_SHARED}"
+    "*:shared=${CONAN_SHARED}"
 )
 
 cmake_path(CONVERT "$ENV{CMAKE_USER_HOME}" TO_CMAKE_PATH_LIST CMAKE_USER_HOME NORMALIZE)
@@ -177,23 +182,21 @@ get_filename_component("PROJECT_BINARY_DIR_PARENT_NAME" "${PROJECT_BINARY_DIR_PA
 
 add_subdirectory("${PROJECT_BINARY_DIR_PARENT_NAME}/${PROJECT_BINARY_DIR_NAME}/${PROJECT_NAME}")
 
-add_custom_target("cmake-install"
+add_custom_target("cmake-install" ALL
     COMMAND "${CMAKE_COMMAND}" --install "${PROJECT_BINARY_DIR}" --prefix "${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}"
     DEPENDS "gmock" "gmock_main" "${PROJECT_NAME}" "${PROJECT_NAME}_main"
     WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}"
     VERBATIM
 )
 
-add_custom_target("conan-export" ALL
-    COMMAND "${CONAN_COMMAND}"
-            export-pkg
-            #--force
-            "${PROJECT_SOURCE_DIR}/conanfile.py"
-            #"gitlab-group+gitlab-sub-group+${PROJECT_NAME}/stable"
-            --package-folder
-            "${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}"
+add_custom_target("conan-export"
+    COMMAND "${CONAN_COMMAND}" "export-pkg"
+            "--output-folder" "${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}"
             ${CONAN_SETTINGS}
             ${CONAN_OPTIONS}
+            #"--user" "gitlab-group+gitlab-sub-group+${PROJECT_NAME}"
+            #"--channel" "stable"
+            "${PROJECT_SOURCE_DIR}/conanfile.py"
     DEPENDS "cmake-install"
     WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}"
     VERBATIM
