@@ -17,13 +17,35 @@
     ],
     "configurations": [
         {
-            "name": "test-app",
+            "name": "cppvsdbg-test-app",
             "type": "cppvsdbg",
             "request": "launch",
             "console": "internalConsole",
             "cwd": "${workspaceRoot}",
             "preLaunchTask": "test-app",
-            "program": "@_BINARY_DIR@/test/bin/test-app.exe",
+            "program": "@_BINARY_DIR@/test/bin/test-app",
+            "args": [
+                "--project-binary-dir=@_BINARY_DIR@",
+                "--gtest_filter=${input:test-app-selector}"
+            ],
+            "environment": [
+                {
+                    "name": "PATH",
+                    "value": "@_BINARY_DIR@/test/bin"
+                }
+            ]
+        },
+        {
+            "name": "cppdbg-test-app",
+            "type": "cppdbg",
+            "request": "launch",
+            "externalConsole": false,
+            "avoidWindowsConsoleRedirection": true,
+            "internalConsoleOptions": "openOnSessionStart",
+            "MIMode": "gdb",
+            "cwd": "${workspaceRoot}",
+            "preLaunchTask": "test-app",
+            "program": "@_BINARY_DIR@/test/bin/test-app",
             "args": [
                 "--project-binary-dir=@_BINARY_DIR@",
                 "--gtest_filter=${input:test-app-selector}"

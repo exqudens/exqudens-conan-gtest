@@ -59,7 +59,7 @@ class ConanConfiguration(ConanFile):
 1. `git clean -xdf`
 1. `cmake --preset ${preset}`
 1. `cmake --build --preset ${preset} --target vscode`
-1. use vscode debugger launch configurations: `test-app`
+1. use vscode debugger launch configurations: `cppvsdbg-test-app`, `cppdbg-test-app`
 
 ### extensions
 
