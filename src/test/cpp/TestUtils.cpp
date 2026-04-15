@@ -4,6 +4,7 @@
 #include <cstring>
 #include <cstdio>
 #include <array>
+#include <climits>
 #include <stdexcept>
 #include <filesystem>
 #include <numeric>

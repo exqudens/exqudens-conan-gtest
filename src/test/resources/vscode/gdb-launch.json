@@ -1,0 +1,45 @@
+{
+    "version": "0.2.0",
+    "inputs": [
+        {
+            "id": "test-app-selector",
+            "type": "command",
+            "command": "extension.commandvariable.pickStringRemember",
+            "args": {
+                "key": "test-app-selector",
+                "addLabelToTop": "${remember:test-app-selector}",
+                "description": "Select Test Entry",
+                "options": [
+                    "*.*",
+                    "*UnitTests.*",
+                    "FunctionalUnitTests.*",
+                    "FunctionalUnitTests.test_1"
+                ]
+            }
+        }
+    ],
+    "configurations": [
+        {
+            "name": "test-app",
+            "type": "cppdbg",
+            "request": "launch",
+            "externalConsole": false,
+            "avoidWindowsConsoleRedirection": true,
+            "internalConsoleOptions": "openOnSessionStart",
+            "MIMode": "gdb",
+            "cwd": "${workspaceRoot}",
+            "preLaunchTask": "test-app",
+            "program": "/home/exqudens/git/exqudens-conan-gtest/build/13/test/bin/test-app",
+            "args": [
+                "--project-binary-dir=/home/exqudens/git/exqudens-conan-gtest/build/13",
+                "--gtest_filter=${input:test-app-selector}"
+            ],
+            "environment": [
+                {
+                    "name": "PATH",
+                    "value": "/home/exqudens/git/exqudens-conan-gtest/build/13/test/bin"
+                }
+            ]
+        }
+    ]
+}
