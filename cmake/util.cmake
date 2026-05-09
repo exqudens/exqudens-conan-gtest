@@ -38,7 +38,7 @@ endif()
 #                 self.output.error(e)
 #                 raise e
 #
-# #. ``conan export-pkg --output-folder ${BINARY_DIR}/github-package/${zip-file-output-dir} ${BINARY_DIR}/github-package/conanfile.py``
+# #. ``conan export-pkg --output-folder ${BINARY_DIR}/github-package/${zip-file-output-dir}[@${USER}/${CHANNEL}] ${BINARY_DIR}/github-package/conanfile.py``
 #]]
 function(conan_create_github_package)
     set(options)
@@ -46,11 +46,13 @@ function(conan_create_github_package)
         "SOURCE_DIR"
         "BINARY_DIR"
 
+        "URL"
+        "EXPECTED_MD5"
         "CHECK_FILE"
         "NAME"
         "VERSION"
-        "URL"
-        "EXPECTED_MD5"
+        "USER"
+        "CHANNEL"
         "CONAN_COMMAND"
     )
     set(multiValueKeywords)
@@ -84,18 +86,19 @@ function(conan_create_github_package)
         message(FATAL_ERROR "empty BINARY_DIR: '${_BINARY_DIR}'")
     endif()
 
+    if("${_URL}" STREQUAL "")
+        message(FATAL_ERROR "empty URL: '${_URL}'")
+    endif()
+
+    if("${_EXPECTED_MD5}" STREQUAL "")
+        message(FATAL_ERROR "empty EXPECTED_MD5: '${_EXPECTED_MD5}'")
+    endif()
+
     if("${_CHECK_FILE}" STREQUAL "")
         set(_CHECK_FILE "README.md")
     endif()
     if("${_CHECK_FILE}" STREQUAL "")
         message(FATAL_ERROR "empty CHECK_FILE: '${_CHECK_FILE}'")
-    endif()
-
-    if("${_NAME_VERSION_JSON_FILE}" STREQUAL "")
-        set(_NAME_VERSION_JSON_FILE "-")
-    endif()
-    if("${_NAME_VERSION_JSON_FILE}" STREQUAL "")
-        message(FATAL_ERROR "empty NAME_VERSION_JSON_FILE: '${_NAME_VERSION_JSON_FILE}'")
     endif()
 
     if("${_NAME}" STREQUAL "")
@@ -106,12 +109,18 @@ function(conan_create_github_package)
         message(FATAL_ERROR "empty VERSION: '${_VERSION}'")
     endif()
 
-    if("${_URL}" STREQUAL "")
-        message(FATAL_ERROR "empty URL: '${_URL}'")
+    if("${_USER}" STREQUAL "")
+        set(_USER "-")
+    endif()
+    if("${_USER}" STREQUAL "")
+        message(FATAL_ERROR "empty USER: '${_USER}'")
     endif()
 
-    if("${_EXPECTED_MD5}" STREQUAL "")
-        message(FATAL_ERROR "empty EXPECTED_MD5: '${_EXPECTED_MD5}'")
+    if("${_CHANNEL}" STREQUAL "")
+        set(_CHANNEL "-")
+    endif()
+    if("${_CHANNEL}" STREQUAL "")
+        message(FATAL_ERROR "empty CHANNEL: '${_CHANNEL}'")
     endif()
 
     if("${_CONAN_COMMAND}" STREQUAL "")
@@ -190,13 +199,29 @@ function(conan_create_github_package)
     endif()
     if(NOT EXISTS "${_BINARY_DIR}/github-package/exported.txt")
         message(STATUS "export: '${_BINARY_DIR}/github-package/conanfile.py'")
-        execute_process(
-            COMMAND "${_CONAN_COMMAND}" "export-pkg" "--output-folder" "${_BINARY_DIR}/github-package/${_FILE_ZIP_OUTPUT_DIR_NAME}" "${_BINARY_DIR}/github-package/conanfile.py"
-            WORKING_DIRECTORY "${_SOURCE_DIR}"
-            COMMAND_ECHO "STDOUT"
-            ENCODING "UTF-8"
-            COMMAND_ERROR_IS_FATAL "ANY"
-        )
+        if(NOT "${_USER}" STREQUAL "-" AND NOT "${_CHANNEL}" STREQUAL "-")
+            execute_process(
+                COMMAND "${_CONAN_COMMAND}" "export-pkg"
+                        "--output-folder" "${_BINARY_DIR}/github-package/${_FILE_ZIP_OUTPUT_DIR_NAME}"
+                        "--user" "${_USER}"
+                        "--channel" "${_CHANNEL}"
+                        "${_BINARY_DIR}/github-package/conanfile.py"
+                WORKING_DIRECTORY "${_SOURCE_DIR}"
+                COMMAND_ECHO "STDOUT"
+                ENCODING "UTF-8"
+                COMMAND_ERROR_IS_FATAL "ANY"
+            )
+        else()
+            execute_process(
+                COMMAND "${_CONAN_COMMAND}" "export-pkg"
+                        "--output-folder" "${_BINARY_DIR}/github-package/${_FILE_ZIP_OUTPUT_DIR_NAME}"
+                        "${_BINARY_DIR}/github-package/conanfile.py"
+                WORKING_DIRECTORY "${_SOURCE_DIR}"
+                COMMAND_ECHO "STDOUT"
+                ENCODING "UTF-8"
+                COMMAND_ERROR_IS_FATAL "ANY"
+            )
+        endif()
         file(WRITE "${_BINARY_DIR}/github-package/exported.txt" "0;no-error")
     endif()
     message(STATUS "exported: '${_NAME}/${_VERSION}'")

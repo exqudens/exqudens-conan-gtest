@@ -204,6 +204,8 @@ if("${USE_CONAN}")
         execute_process(
             COMMAND "${CONAN_COMMAND}" "install"
                     "--output-folder" "${BASE_DIR}"
+                    "--user" "${CONAN_USER}"
+                    "--channel" "${CONAN_CHANNEL}"
                     "${PROJECT_SOURCE_DIR}/build-conanfile.py"
             WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}"
             COMMAND_ECHO "STDOUT"

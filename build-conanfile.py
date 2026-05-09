@@ -6,9 +6,16 @@ from conan import ConanFile
 from conan.tools.files import copy
 
 class ConanConfiguration(ConanFile):
-    requires: list[str] = [
-        'github-gtest/1.11.0'
-    ]
+
+    def requirements(self):
+        try:
+            if self.user and self.channel:
+                self.requires(f"github-gtest/1.11.0@{self.user}/{self.channel}")
+            else:
+                self.requires("github-gtest/1.11.0")
+        except Exception as e:
+            self.output.error(e)
+            raise e
 
     def generate(self):
         try:

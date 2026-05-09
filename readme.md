@@ -2,7 +2,7 @@
 
 ## how-to-create-github-conan-package
 
-1. `cmake -P cmake/util.cmake -- conan_create_github_package NAME github-gtest VERSION 1.11.0 URL https://github.com/google/googletest/archive/refs/tags/release-1.11.0.zip EXPECTED_MD5 52943a59cefce0ae0491d4d2412c120b`
+1. `cmake -P cmake/util.cmake -- conan_create_github_package URL https://github.com/google/googletest/archive/refs/tags/release-1.11.0.zip EXPECTED_MD5 52943a59cefce0ae0491d4d2412c120b NAME github-gtest VERSION 1.11.0 USER exqudens CHANNEL development`
 1. *(optional)* check `conan list 'github-gtest/1.11.0:*'`
 1. *(optional)* check ``conan cache path 'github-gtest/1.11.0:${conan list-output-packages[0]}'``
 1. *(optional)* check ``ls -1a ${conan-cache-path-output}``
