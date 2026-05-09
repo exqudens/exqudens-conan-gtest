@@ -1,37 +1,11 @@
 # exqudens-conan-gtest
 
-## how-to-create-conan-package
+## how-to-create-github-conan-package
 
-1. `mkdir tmp`
-1. download zip file from `https://github.com/google/googletest/archive/refs/tags/release-1.11.0.zip`
-1. extract zip file to `tmp/googletest-release-1.11.0`
-1. check file `tmp/googletest-release-1.11.0/README.md` exists
-1. create file `tmp/conanfile.py` with content:
-
-```
-from pathlib import Path
-
-required_conan_version = ">=2.0"
-
-from conan import ConanFile
-from conan.tools.files import copy
-
-class ConanConfiguration(ConanFile):
-    name: str = 'github-gtest'
-    version: str = '1.11.0'
-
-    def package(self):
-        try:
-            copy(self, pattern="*", src=Path(self.build_folder).as_posix(), dst=Path(self.package_folder).as_posix())
-        except Exception as e:
-            self.output.error(e)
-            raise e
-```
-
-1. `conan export-pkg --output-folder tmp/googletest-release-1.11.0 tmp/conanfile.py`
-1. check `conan list 'github-gtest/1.11.0:*'`
-1. check `conan cache path 'github-gtest/1.11.0:${conan list-output-packages[0]}'`
-1. check `ls -1a ${conan-cache-path-output}`
+1. `cmake -P cmake/util.cmake -- conan_create_github_package NAME github-gtest VERSION 1.11.0 URL https://github.com/google/googletest/archive/refs/tags/release-1.11.0.zip EXPECTED_MD5 52943a59cefce0ae0491d4d2412c120b`
+1. *(optional)* check `conan list 'github-gtest/1.11.0:*'`
+1. *(optional)* check ``conan cache path 'github-gtest/1.11.0:${conan list-output-packages[0]}'``
+1. *(optional)* check ``ls -1a ${conan-cache-path-output}``
 1. *(optional)* `conan upload github-gtest/1.11.0 --remote gitlab`
 
 ## how-to-test-all-presets
