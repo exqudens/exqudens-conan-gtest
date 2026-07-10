@@ -12,9 +12,9 @@ string(REPLACE "." ";" PRESET_NAME_ELEMENTS "${PRESET_NAME}")
 
 if("${USE_CONAN}")
     if("windows" IN_LIST "PRESET_NAME_ELEMENTS")
-        find_program(CONAN_COMMAND NAMES "conan.exe" PATHS ENV CONAN_PATH ENV PATH REQUIRED NO_CACHE NO_DEFAULT_PATH)
+        find_program(CONAN_COMMAND NAMES "conan.exe" PATHS ENV CONAN_PATH ENV PATH REQUIRED NO_DEFAULT_PATH)
     else()
-        find_program(CONAN_COMMAND NAMES "conan" PATHS ENV CONAN_PATH ENV PATH REQUIRED NO_CACHE NO_DEFAULT_PATH)
+        find_program(CONAN_COMMAND NAMES "conan" PATHS ENV CONAN_PATH ENV PATH REQUIRED NO_DEFAULT_PATH)
     endif()
     message(STATUS "CONAN_COMMAND: '${CONAN_COMMAND}'")
     set(CONAN_USER "exqudens" CACHE STRING "...")
@@ -69,11 +69,11 @@ if("msvc-x64-x64" IN_LIST "PRESET_NAME_ELEMENTS")
     endif()
 elseif("gcc" IN_LIST PRESET_NAME_ELEMENTS)
     if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/build/gcc-toolchain.cmake")
-        find_file(compilerFile NAMES "gcc" PATHS ENV GCC_PATH ENV PATH REQUIRED NO_CACHE NO_DEFAULT_PATH)
+        find_file(COMPILER_FILE NAMES "gcc" PATHS ENV GCC_PATH ENV PATH REQUIRED NO_DEFAULT_PATH)
         set_gnu_toolchain(TOOLCHAIN_CONTENT
             PROCESSOR "x86_64"
             OS "${CMAKE_HOST_SYSTEM_NAME}"
-            PATH "${compilerFile}"
+            PATH "${COMPILER_FILE}"
             SET_CMAKE_SYSTEM_NAME "0"
             OUTPUT_FILE "${CMAKE_CURRENT_SOURCE_DIR}/build/gcc-toolchain.cmake"
         )
