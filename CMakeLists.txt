@@ -35,7 +35,7 @@ if("${CMAKE_UTIL_FILE}" STREQUAL "")
                     COMMAND_ERROR_IS_FATAL "ANY"
                 )]]
                 execute_process(
-                    COMMAND "${CONAN_COMMAND}" "install" "--tool-requires=exqudens-cmake/0.0.1@${CONAN_USER}/${CONAN_CHANNEL}" "--deployer" "direct_deploy" "--deployer-folder" "${CMAKE_SOURCE_DIR}/build/dependencies"
+                    COMMAND "${CONAN_COMMAND}" "install" "--envs-generation" "false" "--tool-requires=exqudens-cmake/0.0.1@${CONAN_USER}/${CONAN_CHANNEL}" "--deployer" "direct_deploy" "--deployer-folder" "${CMAKE_SOURCE_DIR}/build/dependencies"
                     WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}"
                     COMMAND_ECHO "STDOUT"
                     ENCODING "UTF-8"
@@ -91,6 +91,12 @@ string(STRIP "${RAW_VERSION}" VERSION)
 project("${NAME}" VERSION "${VERSION}" LANGUAGES "NONE")
 
 message(STATUS "project: '${PROJECT_NAME}-${PROJECT_VERSION}'")
+
+set(CMAKE_UTIL_ONLY "0" CACHE BOOL "...")
+
+if("${CMAKE_UTIL_ONLY}")
+    return()
+endif()
 
 enable_language("C")
 enable_language("CXX")
@@ -161,7 +167,7 @@ endif()
 
 string(TOLOWER "${PROJECT_NAME}" PROJECT_NAME_LOWER)
 set(PROJECT_VERSION_NOTWEAK "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}")
-set(BASE_DIR "${PROJECT_SOURCE_DIR}/build/${PROJECT_NAME_LOWER}-${PROJECT_VERSION_NOTWEAK}")
+set(BASE_DIR "${PROJECT_SOURCE_DIR}/build/googletest-release-${PROJECT_VERSION_NOTWEAK}")
 cmake_path(RELATIVE_PATH "BASE_DIR" BASE_DIRECTORY "${PROJECT_SOURCE_DIR}" OUTPUT_VARIABLE "BASE_DIR_REL")
 
 if("${USE_CONAN}")
@@ -203,7 +209,8 @@ if("${USE_CONAN}")
         )]]
         execute_process(
             COMMAND "${CONAN_COMMAND}" "install"
-                    "--output-folder" "${BASE_DIR}"
+                    "--envs-generation" "false"
+                    "--output-folder" "${PROJECT_SOURCE_DIR}/build"
                     "--user" "${CONAN_USER}"
                     "--channel" "${CONAN_CHANNEL}"
                     "${PROJECT_SOURCE_DIR}/build-conanfile.py"
@@ -431,11 +438,10 @@ add_custom_target("vscode"
 
             LAUNCH_GENERATE "1"
             LAUNCH_FILE_OVERWRITE "1"
-            LAUNCH_TEMPLATE_FILE "${PROJECT_SOURCE_DIR}/src/test/resources/vscode/command-variable-launch.json"
+            LAUNCH_TEMPLATE_FILE "${PROJECT_SOURCE_DIR}/src/test/resources/vscode/launch.json"
             LAUNCH_FILE "${PROJECT_SOURCE_DIR}/.vscode/launch.json"
             LAUNCH_TESTS_FILE "${PROJECT_BINARY_DIR}/test/bin/tests.json"
             LAUNCH_TESTS "*.*" "*UnitTests.*"
-            LAUNCH_TESTS_INDENT "20"
     DEPENDS "${PROJECT_NAME}" "test-app"
     WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}"
     USES_TERMINAL
