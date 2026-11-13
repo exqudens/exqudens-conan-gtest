@@ -60,7 +60,7 @@ if("msvc-x64-x64" IN_LIST "PRESET_NAME_ELEMENTS")
         set_msvc_toolchain(TOOLCHAIN_CONTENT
             PROCESSOR "x86_64"
             OS "${CMAKE_HOST_SYSTEM_NAME}"
-            VERSION "17"
+            VERSION "18"
             HOST "x64"
             TARGET "x64"
             SET_CMAKE_SYSTEM_NAME "0"
@@ -91,12 +91,6 @@ string(STRIP "${RAW_VERSION}" VERSION)
 project("${NAME}" VERSION "${VERSION}" LANGUAGES "NONE")
 
 message(STATUS "project: '${PROJECT_NAME}-${PROJECT_VERSION}'")
-
-set(CMAKE_UTIL_ONLY "0" CACHE BOOL "...")
-
-if("${CMAKE_UTIL_ONLY}")
-    return()
-endif()
 
 enable_language("C")
 enable_language("CXX")
@@ -167,7 +161,7 @@ endif()
 
 string(TOLOWER "${PROJECT_NAME}" PROJECT_NAME_LOWER)
 set(PROJECT_VERSION_NOTWEAK "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}")
-set(BASE_DIR "${PROJECT_SOURCE_DIR}/build/googletest-release-${PROJECT_VERSION_NOTWEAK}")
+set(BASE_DIR "${PROJECT_SOURCE_DIR}/build/googletest-${PROJECT_VERSION_NOTWEAK}")
 cmake_path(RELATIVE_PATH "BASE_DIR" BASE_DIRECTORY "${PROJECT_SOURCE_DIR}" OUTPUT_VARIABLE "BASE_DIR_REL")
 
 if("${USE_CONAN}")

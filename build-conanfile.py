@@ -10,9 +10,9 @@ class ConanConfiguration(ConanFile):
     def requirements(self):
         try:
             if self.user and self.channel:
-                self.requires(f"github-gtest/1.11.0@{self.user}/{self.channel}")
+                self.requires(f"github-gtest/1.18.0@{self.user}/{self.channel}")
             else:
-                self.requires("github-gtest/1.11.0")
+                self.requires("github-gtest/1.18.0")
         except Exception as e:
             self.output.error(e)
             raise e
